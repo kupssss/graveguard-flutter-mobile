@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 class ApiConfig {
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://graveguard-6f71c53d057c.herokuapp.com',
+    defaultValue: 'https://graveguard-6f71c53d057c.herokuapp.com/',
   );
   static const Duration timeout = Duration(seconds: 15);
   static const Duration pingTimeout = Duration(seconds: 4);

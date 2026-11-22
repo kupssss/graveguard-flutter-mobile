@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../components/floor.dart';
 import '../components/group.dart';
 import '../components/gate.dart';
+import '../components/trees.dart';
 import '../components/pathfinder.dart';
 import '../components/route_search.dart';
 import '../components/cluster.dart';
@@ -484,6 +485,9 @@ class _MapsPageState extends State<MapsPage> {
         ),
         Positioned.fill(
           child: RepaintBoundary(child: const Gate()),
+        ),
+        Positioned.fill(
+          child: RepaintBoundary(child: const TreeLine()),
         ),
         Positioned.fill(
           child: RepaintBoundary(child: const RouteLayer(markers: true)),

@@ -2,6 +2,7 @@
 // home.dart
 // ============================================================================
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import '../theme/app_theme.dart';
@@ -12,6 +13,7 @@ import 'maps.dart';
 import 'history.dart';
 import 'grave_list.dart';
 import 'media.dart';
+import 'vacancy.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -191,6 +193,12 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  void _openVacancy() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const VacancyPage()),
+    );
+  }
+
   void _openPage(Widget page) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => page),
@@ -319,6 +327,7 @@ class _HomePageState extends State<HomePage>
                   child: Column(
                     children: [
                       _buildWelcomeCard(),
+                      _buildVacancyBanner(),
                       _buildSearchBar(),
                       _buildStatsRow(),
                       _buildAnnouncements(),
@@ -515,6 +524,13 @@ class _HomePageState extends State<HomePage>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildVacancyBanner() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      child: _VacancyBanner(onTap: _openVacancy),
     );
   }
 
@@ -1490,6 +1506,251 @@ class _EventTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ============================================================================
+// VACANCY BANNER — animated "looking for a plot?" call-to-action
+// ============================================================================
+class _VacancyBanner extends StatefulWidget {
+  const _VacancyBanner({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_VacancyBanner> createState() => _VacancyBannerState();
+}
+
+class _VacancyBannerState extends State<_VacancyBanner>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _loop;
+
+  @override
+  void initState() {
+    super.initState();
+    _loop = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _loop.dispose();
+    super.dispose();
+  }
+
+  Widget _chip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.22)),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: AppColors.white,
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _loop,
+      builder: (context, _) {
+        final t = _loop.value; // 0..1, loops
+        final pulse = (math.sin(t * 2 * math.pi) + 1) / 2; // 0..1, smooth
+
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: AppColors.navy,
+            border: Border.all(
+              color: AppColors.accentRed.withOpacity(0.45 + 0.55 * pulse),
+              width: 1.6,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.accentRed.withOpacity(0.18 + 0.22 * pulse),
+                blurRadius: 16 + 14 * pulse,
+                spreadRadius: 1 + 2 * pulse,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18.5),
+            child: Stack(
+              children: [
+                // Floating emoji decorations
+                Positioned(
+                  right: 18,
+                  top: 14 + 6 * pulse,
+                  child: const Text('🕊️', style: TextStyle(fontSize: 34)),
+                ),
+                Positioned(
+                  right: 22,
+                  top: 62 - 4 * pulse,
+                  child: Opacity(
+                    opacity: 0.85,
+                    child: const Text('🌿', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // "Limited vacancies" badge with blinking dot
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentRed,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                color: Colors.white
+                                    .withOpacity(0.35 + 0.65 * pulse),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'LIMITED VACANCIES',
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 56),
+                        child: Text(
+                          'Looking for a plot?',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            height: 1.1,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Give your loved ones a peaceful, well kept resting '
+                        'place. Vacant plots are available now. Reserve '
+                        'yours before they are gone. 🌹',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.88),
+                          fontSize: 13.5,
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _chip('Prime locations'),
+                          _chip('Quick reservation'),
+                          _chip('Family plots'),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Transform.scale(
+                        scale: 1 + 0.025 * pulse,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: widget.onTap,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.accentRed,
+                              foregroundColor: AppColors.white,
+                              elevation: 6,
+                              shadowColor: AppColors.accentRed,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.landscape_rounded, size: 20),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'FIND AN AVAILABLE PLOT',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Transform.translate(
+                                  offset: Offset(4 * pulse, 0),
+                                  child: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.verified_outlined,
+                            size: 14,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Free to browse · No commitment',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

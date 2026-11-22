@@ -329,9 +329,7 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
-    {
+  {
     'id': 'NA',
     'name': 'NA',
     'gx': 2400,
@@ -348,16 +346,12 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'cornerRadiusTR': 0.0,
     'cornerRadiusBR': 50.0,
     'cornerRadiusBL': 0.0,
-
-
     'label': 'NA',
     'labelHeight': 550.0,
     'labelFontSize': 500.0,
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
   {
     'id': 'Q28',
     'name': 'Q28',
@@ -449,8 +443,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
   {
     'id': 'NA2',
     'name': 'NA2',
@@ -468,15 +460,12 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'cornerRadiusTR': 50.0,
     'cornerRadiusBR': 0.0,
     'cornerRadiusBL': 0.0,
-
-
     'label': 'NA2',
     'labelHeight': 550.0,
     'labelFontSize': 500.0,
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
   {
     'id': 'memorial',
     'name': 'memorial',
@@ -485,7 +474,7 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'gw': 500.0,
     'gh': 500.0,
     'thickness': 3000.0,
-    'cornerRadius': 300.0, 
+    'cornerRadius': 300.0,
     'visible': true,
     'topColor':     Color(0xFFB0B0B0),
     'outlineColor': Color(0xFF8A8A8A),
@@ -505,7 +494,7 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'gw': 500.0,
     'gh': 500.0,
     'thickness': 3000.0,
-    'cornerRadius': 300.0, 
+    'cornerRadius': 300.0,
     'visible': true,
     'topColor':     Color(0xFFB0B0B0),
     'outlineColor': Color(0xFF8A8A8A),
@@ -791,9 +780,7 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
-   {
+  {
     'id': '75',
     'name': '75',
     'gx': 50.0,
@@ -1059,8 +1046,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
   {
     'id': '58',
     'name': '58',
@@ -1479,7 +1464,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
   {
     'id': 'CR2',
     'name': 'CR2',
@@ -1499,7 +1483,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
   {
     'id': '38',
     'name': '38',
@@ -1576,8 +1559,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
-
-
   {
     'id': '76',
     'name': '76',
@@ -1616,7 +1597,6 @@ const List<Map<String, dynamic>> kGroupConfigs = [
     'labelColor': Colors.white,
     'labelOutlineColor': Colors.black,
   },
- 
   {
     'id': '78',
     'name': '78',
@@ -1925,6 +1905,19 @@ const List<Map<String, dynamic>> kGroupConfigs = [
 
 const String kDefaultFocusGroupId = 'g14';
 
+// ---------------------------------------------------------------------------
+// BLUE THEME (applied to every group except g14)
+// ---------------------------------------------------------------------------
+class _BlueTheme {
+  static const Color top       = Color(0xFF4A90D9);
+  static const Color outline   = Color(0xFF2C5F94);
+  static const Color lightCurb = Color(0xFF6FA8DC);
+  static const Color darkCurb  = Color(0xFF356AA0);
+}
+
+bool _useBlueTheme(Map<String, dynamic> cfg) =>
+    (cfg['id'] as String?) != kDefaultFocusGroupId;
+
 Map<String, dynamic>? getFocusGroupConfig() {
   for (final g in kGroupConfigs) {
     if (g['id'] == kDefaultFocusGroupId) return g;
@@ -2147,10 +2140,25 @@ class _GroupPainter extends CustomPainter {
     final rBR = _num(cfg, 'cornerRadiusBR', legacy).clamp(0.0, cap).toDouble();
     final rBL = _num(cfg, 'cornerRadiusBL', legacy).clamp(0.0, cap).toDouble();
 
-    final topColor     = (cfg['topColor']     as Color?) ?? const Color(0xFFB0B0B0);
-    final outlineColor = (cfg['outlineColor'] as Color?) ?? const Color(0xFF8A8A8A);
-    final lightCurb    = (cfg['lightCurb']    as Color?) ?? const Color(0xFF7A7A7A);
-    final darkCurb     = (cfg['darkCurb']     as Color?) ?? const Color(0xFF5A5A5A);
+    // ── COLOR RESOLUTION ───────────────────────────────────────────────────
+    final bool blue = _useBlueTheme(cfg);
+    final Color topColor;
+    final Color outlineColor;
+    final Color lightCurb;
+    final Color darkCurb;
+
+    if (blue) {
+      topColor     = _BlueTheme.top;
+      outlineColor = _BlueTheme.outline;
+      lightCurb    = _BlueTheme.lightCurb;
+      darkCurb     = _BlueTheme.darkCurb;
+    } else {
+      topColor     = (cfg['topColor']     as Color?) ?? const Color(0xFFB0B0B0);
+      outlineColor = (cfg['outlineColor'] as Color?) ?? const Color(0xFF8A8A8A);
+      lightCurb    = (cfg['lightCurb']    as Color?) ?? const Color(0xFF7A7A7A);
+      darkCurb     = (cfg['darkCurb']     as Color?) ?? const Color(0xFF5A5A5A);
+    }
+    // ───────────────────────────────────────────────────────────────────────
 
     final worldPts = _roundedRectWorld(
       gx, gy, gw, gh,
@@ -2214,7 +2222,14 @@ class _GroupPainter extends CustomPainter {
       final bool onBottom = dMin == dBottom;
 
       final bool isHorizEdge = onTop || onBottom;
-      final Color base = isHorizEdge ? lightCurb : darkCurb;
+      final Color base;
+      if (blue) {
+        base = isHorizEdge
+            ? lightCurb
+            : Color.lerp(darkCurb, outlineColor, 0.35)!;
+      } else {
+        base = isHorizEdge ? lightCurb : darkCurb;
+      }
 
       final edgeDepth = (a.dy + b.dy) / 2;
       edges.add(_SideEdge(a, b, base, edgeDepth));
@@ -2237,13 +2252,31 @@ class _GroupPainter extends CustomPainter {
     }
     topPath.close();
 
-    canvas.drawPath(topPath, Paint()..color = topColor);
+    // Top face: gradient for blue groups, flat fill for g14.
+    if (blue) {
+      final bounds = topPath.getBounds();
+      final topPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.lerp(topColor, Colors.white, 0.18)!,
+            topColor,
+            Color.lerp(topColor, outlineColor, 0.25)!,
+          ],
+          stops: const [0.0, 0.55, 1.0],
+        ).createShader(bounds);
+      canvas.drawPath(topPath, topPaint);
+    } else {
+      canvas.drawPath(topPath, Paint()..color = topColor);
+    }
+
     canvas.drawPath(
       topPath,
       Paint()
         ..color = outlineColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
+        ..strokeWidth = blue ? 2.4 : 2.0
         ..strokeJoin = StrokeJoin.round,
     );
 
@@ -2289,7 +2322,19 @@ class _GroupPainter extends CustomPainter {
       ..lineTo(bTop.dx, bTop.dy)
       ..lineTo(aTop.dx, aTop.dy)
       ..close();
-    canvas.drawPath(p, Paint()..color = color);
+
+    final bounds = p.getBounds();
+    final paint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color.lerp(color, Colors.black, 0.15)!,
+          color,
+        ],
+      ).createShader(bounds);
+    canvas.drawPath(p, paint);
+
     canvas.drawPath(
       p,
       Paint()
